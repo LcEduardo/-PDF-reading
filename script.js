@@ -1,4 +1,4 @@
-const API_KEY = 'sec_w6ehnsByXDiaHmKvyiqtkBgN4xasye2C';
+const API_KEY = 'My-chave-key';
 
 document.getElementById('enviar').addEventListener('click', async function() {
     const input = document.getElementById('upload');
