@@ -1,21 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de texto</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gerador de Texto com PDF</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h2>Adicione o pdf</h2>
-    <input type="file" id="upload" accept="application/pdf">
-    <button id="enviar">Enviar PDF</button>
+<body class="bg-light py-4">
+  <div class="container bg-white p-4 rounded shadow-sm" style="max-width: 650px;">
+    <h1 class="text-center text-dark mb-4 fs-4">Gerador de Texto</h1>
 
-    <div>
-        <p id="msg"></p>
+    <!-- Upload do PDF -->
+    <div class="mb-4">
+      <label for="upload" class="form-label">Adicione o PDF</label>
+      <input type="file" id="upload" class="form-control" accept="application/pdf">
+      <button id="enviar" class="btn btn-primary mt-2">Enviar PDF</button>
+      <p id="msg" class="mt-2 text-success"></p>
     </div>
 
-    <script src="script.js"></script>
-    <script src="	https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Formulário principal -->
+    <div class="mb-3">
+      <label for="empresa_id" class="form-label">Empresa ID</label>
+      <input type="number" class="form-control" id="empresa_id">
+    </div>
+
+    <div class="mb-2 fw-bold">Destaque ICMS</div>
+    <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="icmsCheckBox"><label class="form-check-label" for="icmsCheckBox">ICMS</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="ipiCheckBox"><label class="form-check-label" for="ipiCheckBox">IPI</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="icmsStCheckBox"><label class="form-check-label" for="icmsStCheckBox">ICMS ST</label></div>
+    <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="freteCheckBox"><label class="form-check-label" for="freteCheckBox">Frete</label></div>
+    <div class="form-check mb-3"><input class="form-check-input" type="checkbox" id="descontoCheckBox"><label class="form-check-label" for="descontoCheckBox">Desconto</label></div>
+
+    <div class="mb-3">
+      <label for="outroDestaque" class="form-label">Outro destaque (se necessário):</label>
+      <input type="text" class="form-control" id="outroDestaque" placeholder="Ex: PIS, COFINS...">
+    </div>
+
+    <div class="mb-3">
+      <label for="obs" class="form-label">Observações</label>
+      <input type="text" class="form-control" id="obs">
+    </div>
+
+    <div class="mb-3">
+      <label for="cfop" class="form-label">CFOP</label>
+      <select id="cfop" class="form-select">
+        <option value="5202">5202 - Devolução de compra para comercialização</option>
+        <option value="5411">5411 - Devolução de compra com ST</option>
+        <option value="5413">5413 - Devolução uso/consumo com ST</option>
+        <option value="5661">5661 - Devolução de combustível</option>
+        <option value="5915">5915 - Remessa para conserto</option>
+        <option value="5916">5916 - Retorno de conserto</option>
+        <option value="5949">5949 - Outra saída</option>
+        <option value="6202">6202 - Interestadual - Devolução</option>
+        <option value="6411">6411 - Interestadual - Devolução com ST</option>
+        <option value="6915">6915 - Interestadual - Remessa para conserto</option>
+        <option value="6916">6916 - Interestadual - Retorno de conserto</option>
+        <option value="6949">6949 - Interestadual - Outra saída</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="pedido" class="form-label">Pedido</label>
+      <input type="number" class="form-control" id="pedido">
+    </div>
+
+    <div class="mb-3">
+      <label for="chave_acesso" class="form-label">Chave de Acesso</label>
+      <input type="text" id="chave_acesso" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label for="informacoes_complementares" class="form-label">Informações Complementares</label>
+      <textarea id="informacoes_complementares" class="form-control" rows="2"></textarea>
+    </div>
+
+    <button class="btn btn-success w-100" onclick="gerarTexto()">Gerar Texto</button>
+
+    <div id="resultado" class="mt-4 border-start border-success ps-3 py-3 bg-success-subtle text-success rounded" style="white-space: pre-wrap;"></div>
+  </div>
+
+  <script src="script.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
