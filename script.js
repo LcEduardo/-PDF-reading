@@ -35,7 +35,31 @@ document.getElementById('enviar').addEventListener('click', async function() {
             throw new Error('sourceId não retornado no upload.');
         }
 
-        const pergunta = "Por favor, envie a chave de acesso e o número da nota fiscal (NF).Além disso, preciso dos campos referentes ao Cálculo do Imposto, incluindo os valores presentes em cada um deles. E a alíquota";
+        const pergunta = `
+Extraia APENAS os valores monetários dos campos abaixo, diretamente da seção "Cálculo do Imposto" da Nota Fiscal. NÃO inclua alíquotas, porcentagens ou explicações.
+
+❗ ATENÇÃO: Não traga alíquota (%), apenas valores em reais (ex: 12,34).
+
+Campos obrigatórios:
+
+- Chave de acesso (44 dígitos)
+- Número da Nota Fiscal
+- Valor do ICMS
+- Valor do ICMS ST
+- Valor do IPI
+- Valor do Frete
+- Valor do Desconto
+
+Formato exato da resposta (não mude):
+
+Chave de Acesso: 1234 5678 9012 3456 7890 1234 5678 9012 3456 7890 1234  
+Número da Nota Fiscal: 123456  
+Valor do ICMS: 32,76  
+Valor do ICMS ST: 0,00  
+Valor do IPI: 12,34  
+Valor do Frete: 5,40  
+Valor do Desconto: 0,00
+`;
 
         const chatResponse = await fetch('https://api.chatpdf.com/v1/chats/message', {
             method: 'POST',
@@ -65,17 +89,49 @@ document.getElementById('enviar').addEventListener('click', async function() {
         const respostaTexto = chatData.content;
         msg.textContent = 'Resposta do PDF: ' + respostaTexto;
 
-        const chaveMatch = respostaTexto.match(/chave de acesso.*?\*\*(.*?)\*\*/i);
-        const numeroNFMatch = respostaTexto.match(/n[úu]mero da nota fiscal.*?\*\*(\d+)\*\*/i);
+        const linhas = respostaTexto.split('\n');
 
-        if (chaveMatch && chaveMatch[1]) {
-            document.getElementById('chave_acesso').value = chaveMatch[1].trim();
-        }
+        linhas.forEach(linha => {
+            const [campoBruto, valorBruto] = linha.split(':');
+            if (!campoBruto || !valorBruto) return;
 
-        if (numeroNFMatch && numeroNFMatch[1]) {
-            const numeroNF = numeroNFMatch[1].trim();
-            document.getElementById('informacoes_complementares').value = `Refere-se à NF:${numeroNF}`;
-        }
+            const campo = campoBruto.trim().toLowerCase();
+            const valor = valorBruto.trim();
+
+            if (campo.includes('chave de acesso')) {
+                document.getElementById('chave_acesso').value = valor;
+            }
+
+            else if (campo.includes('número da nota fiscal')) {
+                document.getElementById('informacoes_complementares').value = `Refere-se à NF:${valor}`;
+            }
+
+            else if (campo.includes('icms') && !campo.includes('st')) {
+                const num = parseFloat(valor.replace('.', '').replace(',', '.'));
+                if (num > 0) document.getElementById('icmsCheckBox').checked = true;
+            }
+
+            else if (campo.includes('icms st')) {
+                const num = parseFloat(valor.replace('.', '').replace(',', '.'));
+                if (num > 0) document.getElementById('icmsStCheckBox').checked = true;
+            }
+
+            else if (campo.includes('ipi')) {
+                const num = parseFloat(valor.replace('.', '').replace(',', '.'));
+                if (num > 0) document.getElementById('ipiCheckBox').checked = true;
+                
+            }
+
+            else if (campo.includes('frete')) {
+                const num = parseFloat(valor.replace('.', '').replace(',', '.'));
+                if (num > 0) document.getElementById('freteCheckBox').checked = true;
+            }
+
+            else if (campo.includes('desconto')) {
+                const num = parseFloat(valor.replace('.', '').replace(',', '.'));
+                if (num > 0) document.getElementById('descontoCheckBox').checked = true;
+            }
+            });
 
     }catch(error){
         console.error(error);
